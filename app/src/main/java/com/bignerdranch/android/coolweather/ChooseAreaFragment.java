@@ -2,6 +2,7 @@ package com.bignerdranch.android.coolweather;
 
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -93,11 +94,16 @@ public class ChooseAreaFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (currentLevel == LEVEL_PROVINCE) {
                     selectProvince = provinceList.get(position);
-                    Log.d("tag====",selectProvince+"444444444");
                     queryCities();
                 } else if (currentLevel == LEVEL_CITY) {
                     selectCity = cityList.get(position);
                     queryCounties();
+                }else if (currentLevel ==LEVEL_COUNTY){
+                    String weatherId = countyList.get(position).getWeatherId();
+                    Intent intent = new Intent(getActivity(),WeatherActivity.class);
+                    intent.putExtra("weather_id", weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -146,7 +152,6 @@ public class ChooseAreaFragment extends Fragment {
         titleText.setText(selectProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
         cityList = DataSupport.where("provinceId = ?", String.valueOf(selectProvince.getId())).find(City.class);
-        Log.d("tag====",cityList+"3333333333333");
         if (cityList.size() > 0) {
             dataList.clear();
             for (City city : cityList) {
@@ -159,7 +164,6 @@ public class ChooseAreaFragment extends Fragment {
             int provinceCode = selectProvince.getProvinceCode();
             String address = "http://guolin.tech/api/china/" + provinceCode;
             QueryFromService(address, "city");
-            Log.d("tag====","1111111");
         }
     }
 
@@ -200,7 +204,6 @@ public class ChooseAreaFragment extends Fragment {
                 if ("province" == type) {
                     result = Utility.handleProvinceResponse(responseText);
                 } else if ("city" == type) {
-                    Log.d("tag====","222222");
                     result = Utility.handleCityResponse(responseText, selectProvince.getId());
                 } else if ("county" == type) {
                     result = Utility.handleCountyResponse(responseText, selectCity.getId());

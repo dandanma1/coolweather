@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import com.bignerdranch.android.coolweather.db.City;
 import com.bignerdranch.android.coolweather.db.County;
 import com.bignerdranch.android.coolweather.db.Province;
+import com.bignerdranch.android.coolweather.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,6 +80,21 @@ public class Utility {
              e.printStackTrace();
          }
          return false;
+     }
+     /* *
+     * 将返回的json数据解析成weather实体类
+     */
+     public static Weather handlerWeatherResponse(String response) {
+         try {
+             JSONObject jsonObject = new JSONObject(response);
+             JSONArray jsonArray = jsonObject.getJSONArray("HeWeather5");
+             String weatherContent = jsonArray.getJSONObject(0).toString();
+             return new Gson().fromJson(weatherContent,Weather.class);
+         } catch (JSONException e) {
+             e.printStackTrace();
+         }
+         return null;
+
      }
 
 
